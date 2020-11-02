@@ -1,0 +1,885 @@
+---
+title: "Análise de Regras de TED para Fraudes de 2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+<style type="text/css">
+h1.title{
+  font-size: 38px;
+  color: #000000;
+  text-align: center;
+}
+
+h2{
+  font-size: 38px;
+  color: #003641;
+  text-align: center;
+}
+</style>
+<style> div.main-container { max-width: 1000px; } </style>
+
+<style>
+.nav>li>a {
+ color: #00AE9D;
+}
+</style>
+
+```{r setup, include=FALSE, echo=FALSE }
+library(rmarkdown)
+require(knitr)
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE
+)
+
+
+library(magrittr)
+library(readxl)
+library(plotly)
+library(tidyverse)
+library(readr)
+library(lattice)
+library(scales)
+library(haven)
+library(kableExtra)
+
+quod <- read_excel("C:/Users/patrick.franco/Documents/RATING BACEN/Quod/PlanilhaAnalise.xlsx", skip=1)
+
+names(quod)[5] <-"QTD_SCORE_0_100" 
+names(quod)[6] <-"QTD_SCORE_300" 
+names(quod)[7] <-"PCT_SEM_SCORE" 
+names(quod)[8] <-"PCT_COM_CLI_NOVO" 
+names(quod)[9] <-"PCT_COM_NAO_TOMA" 
+names(quod)[10]<-"INAD_SCORE_0_100" 
+names(quod)[11]<-"INAD_SCORE_300" 
+names(quod)[12]<-"KS_CLI_NOVO" 
+names(quod)[13]<-"KS_NAO_TOMA" 
+names(quod)[14]<-"KS_DUMMMY_SEM_SCORE_CLI_NOVO" 
+names(quod)[15]<-"KS_DUMMMY_SEM_SCORE_NAO_TOMA" 
+names(quod)[16]<-"PER_COD_150" 
+names(quod)[17]<-"PER_COD_200" 
+names(quod)[18]<-"PER_COD_222" 
+names(quod)[19]<-"PER_COD_299" 
+names(quod)[20]<-"PER_COD_301" 
+names(quod)[21]<-"PER_COD_303" 
+names(quod)[22]<-"PER_COD_304" 
+names(quod)[23]<-"PER_COD_EXC" 
+
+
+```
+
+
+```{r out.width = "20%",fig.align="left"}
+knitr::include_graphics('Sicoob.png')
+```
+
+<h1>Avaliação dos Indicadores</h1>
+\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n
+
+## <a id="ETP" style="color:#003641" align="left">Navegação</a>
+
+
+<center align="left">
+
+ <a href="#A1" style="color:#7DB61C" align="left">1. Valor das Transações por Cooperativa.</a>
+ 
+ <a href="#A2" style="color:#7DB61C" align="left">2. Renda Média dos Fraudados.</a>
+ 
+ <a href="#A3" style="color:#7DB61C" align="left">3. Quantidade de operações em 5,15, 30 e 60 min.</a>
+ 
+ <a href="#A4" style="color:#7DB61C" align="left">4. Perfil por Horário e Dia da Semana.</a>
+
+ <a href="#A5" style="color:#7DB61C" align="left">5. Discriminação do INAD Sicoob 60</a>
+ 
+ <a href="#A6" style="color:#7DB61C" align="left">6. Indicadores Selecionados Quod</a>
+ 
+ <a href="#A7" style="color:#7DB61C" align="left">7. Comparação SERASA, SCR, Quod</a>
+ 
+ <a href="#A8" style="color:#7DB61C" align="left">8. Seleção Final</a>
+
+</center>
+
+\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n
+
+
+## <a id="A1" href="#ETP"  style="color:#003641">1. Metadados Quod</a>{.tabset}
+
+
+```{r out.width = "70%",fig.align="center"}
+knitr::include_graphics('Quod.png')
+```
+
+
+### Quantidade por Book
+
+ Book                                                       | Quantidade
+------------------------------------------------------------|----------------
+ Perfil Financeiro                                          | 16
+ Pontualidade de Pagamento                                  | 20
+ Relacionamento com Mercado                                 | 10
+
+
+
+
+
+
+### Perfil Financeiro
+
+```{r out.width = "35%",fig.align="center"}
+knitr::include_graphics('book1.png')
+```
+
+
+### Pontualidade de Pagamento
+
+```{r out.width = "35%",fig.align="center"}
+knitr::include_graphics('book2.png')
+```
+
+
+### Relacionamento com Mercado
+
+```{r out.width = "35%",fig.align="center"}
+knitr::include_graphics('book3.png')
+```
+
+
+##
+##
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+
+##
+### Descrição por Book{.tabset}
+
+#### Distreibuição por Segmento
+
+
+ Segmento  | Descrição                                 | Frequência
+-----------|-------------------------------------------|------------
+    0      | Público _no-hit_                          | 3.568
+    1      | Negativação ativa + cadastro positivo     | 2.018
+    2      | Apenas negativação ativa                  |   788
+    3      | negativação resolvida + cadastro positivo | 2.915
+    4      | Negativação negativação resolvida         |   769
+    5      | Apenas positivo                           | 22.667
+    6      | Cadastro                                  | 14.465
+    299    | Não informado                             | 74.641
+
+
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+
+
+#### Perfil Financeiro
+
+
+
+
+Variável    | Descrição                                                             | Interpretação
+------------|-----------------------------------------------------------------------|----------------
+PF_CP_CNT01 | Pontuação que indica a consistência dos pagamentos realizados         | Qt Maior - INAD
+PF_CP_VOL01 | Volume (\$) de pag. em produtos de créd. em relação a renda presumida | Qt Maior + INAD
+PF_CP_VOL02 | Pontuação que indica o volume (\$) de pagamentos realizados           | Qt Maior - INAD
+PF_CP_VOL03 | Volume (\$) de pag. em cartão de crédito em relação a renda presumida | Qt Maior + INAD
+PF_CP_VOL04 | Pontuação que indica volume (\$) de pagamentos em cartão de crédito   | 
+PF_EM_HBT01 | Movimentação recente de contratações de crédito do tipo emergencial   | Qt Maior + INAD
+PF_EM_HBT02 | Indica comportamento histórico de utilização de crédito emergencial   | Qt Maior + INAD
+PF_EM_ITS01 | Indica comprometimento da renda com créditos do tipo emergencial      | Qt Maior + INAD
+PF_EM_ITS02 | Volume (\$) contratações realizadas com créditos do tipo emergencial  | Qt Maior + INAD
+PF_PC_CPR01 | Pontuação que indica comprometimento da renda com produtos de crédito | Qt Maior + INAD
+PF_PC_CPR02 | Pontuação que indica volume financeiro de produtos de crédito         | Qt Maior + INAD
+PF_PC_PRD01 | Pontuação que indica o tipo de contatações realizadas                 | Qt Maior - INAD
+PF_PC_PRD02 | Pontuação que indica o nível de contratações efetuadas                | Qt Maior + INAD
+PF_PC_TPR01 | Pontuação que indica relacionamento futuro (número de parcelas)       | Qt Maior + INAD
+PF_PC_TPR02 | Pontuação que indica relacionamento futuro (valor financeiro)         | 
+PF_PC_VLR01 | Pontuação que indica o nível de comprometimento total (\$) futuro     | Qt Maior + INAD
+
+
+
+#### Pontualidade de Pagamento
+
+Variável    | Descrição                                                             | Interpretação
+------------|-----------------------------------------------------------------------|----------------
+PP_AV_AMP01 | Pontuação do nível de endividamento vigente com credores distintos    | Qt Maior + INAD
+PP_AV_AMP02 | Indica o nível de endividamento com credores e contratos distintos    | Qt Maior + INAD
+PP_AV_GRV01 | Pontuação que indica o nível de inadimplência                         | Qt Maior + INAD
+PP_AV_GRV02 | Pontuação que indica a gravidade do atraso dos débitos em aberto      | Qt Maior + INAD
+PP_AV_GRV03 | Pontuação que indica a tendência do nível de atrasos                  | Qt Maior + INAD
+PP_AV_GRV04 | Pontuação que indica o nível de comprometimento de pagamento          | Qt Maior + INAD
+PP_AV_MRC01 | Indica o comportamento recente de pagamento de dívidas em aberto      | 
+PP_AV_MRC02 | Indica volume (\$) de pagamento recente de dívidas em aberto          | 
+PP_AV_TDC01 | Pontuação que indica a tendência do comportamento de pagamanto        | Qt Maior - INAD
+PP_AV_TDC02 | Pontuação que indica a tendência do volume (\$) de pagamanto          | Qt Maior - INAD
+PP_HA_AMP01 | Indica o nível de endiv. histórico com credores e contratos distintos | Qt Maior + INAD
+PP_HA_AMP02 | Pontuação que indica a dimensão dos atrasos                           | Qt Maior + INAD
+PP_HA_FRQ_01| Pontuação que indica o comportamento histórico de atraso              | Qt Maior + INAD
+PP_HA_REC01 | Pontuação que indica a recência de pagamentos realizados em atraso    | Qt Maior + INAD
+PP_HA_VLR01 | Pontuação que indica o volume (\$) em atraso                          | Qt Maior + INAD
+PP_HA_VLR02 | Pontuação que indica comprometimento da renda com dívidas em aberto   | Qt Maior + INAD
+PP_PD_CPG01 | Pontuação que indica o nível de pagamentos realizados sem atraso      | Qt Maior - INAD
+PP_PD_CPG02 | Pontuação que indica o comportamento de pontualidade de pagamento     | Qt Maior - INAD
+PP_PD_PPG01 | Pontuação que indica o volume dos pagamentos realizados sem atraso    | Qt Maior - INAD
+PP_PD_VPG01 | Sem Descrição (CPG01)                                                 | Qt Maior - INAD
+
+
+
+
+#### Relacionamento com Mercado
+
+
+Variável    | Descrição                                                             | Interpretação
+------------|-----------------------------------------------------------------------|----------------
+RM_BC_FRQ01 | Pontuação que indica o comportamento mensal de busca por crédito      | Qt Maior + INAD
+RM_BC_REC01 | Pontuação que indica a movimentação recente de contratações           | Qt Maior + INAD
+RM_BC_REC02 | Pontuação que indica o tempo desde a última contratação               | 
+RM_PR_AMP01 | Pontuação que indica o nível de relacionamento com credores distintos | 
+RM_PR_ETB01 | Pontuação do nível da estabilidade do relacionamento com os credores  | Qt Maior - INAD
+RM_PR_ETB02 | Pontuação que indica o nível da estabilidade de contratos adquiridos  | Qt Maior - INAD
+RM_PR_MOD01 | Pontuação do nível de relacionamento com o produto "Consórcio"        | Qt Maior - INAD
+RM_PR_MOD02 | Pontuação do nível de relacionamento com o produto "Parcelados"       | Qt Maior + INAD
+RM_PR_MOD03 | Pontuação do nível de relacionamento com o produto "Rotativo"         | Qt Maior + INAD
+RM_PR_MOD04 | Pontuação do nível de relacionamento com o produto "Cartão de Crédito"| Qt Maior + INAD
+
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+
+
+## <a id="A2" href="#ETP"  style="color:#003641">2. Preenchimento com Filtro de Segmento.</a>{.tabset}
+
+
+### Preenchimento Médio
+\n\n
+```{r}
+
+quod %>% group_by(BOOK) %>% summarise(`Preenchimento Médio`=1-mean(PCT_SEM_SCORE)) %>%  
+  kable(align = "c") %>%  kable_styling()
+
+
+```
+
+
+```{r eval=FALSE, include=FALSE}
+
+
+quod %>% mutate( classe = case_when( (1-PCT_SEM_SCORE)==0    ~ 1,
+                                     (1-PCT_SEM_SCORE)<=0.15 ~ 2,
+                                     (1-PCT_SEM_SCORE)<=0.30 ~ 3,
+                                     (1-PCT_SEM_SCORE)<=0.45 ~ 4,
+                                     (1-PCT_SEM_SCORE)<=0.60 ~ 5,
+                                     (1-PCT_SEM_SCORE)<=0.75 ~ 6,
+                                     (1-PCT_SEM_SCORE) >0.75 ~ 7) )  %>% 
+  mutate( Preenchimento = classe %>% as.factor %>% 
+            fct_recode(`0% de Preenchimento`              ="1",
+                       `Entre 0% e 15% de Preenchimento`  ="2",
+                       `Entre 15% e 30% de Preenchimento` ="3",
+                       `Entre 30% e 45% de Preenchimento` ="4",
+                       `Entre 45% e 60% de Preenchimento` ="5",
+                       `Entre 60% e 75% de Preenchimento` ="6",
+                       `Mais que 76% de Preenchimento`    ="7")) %>% 
+  group_by(Preenchimento) %>% summarise(Quantidade=n()) %>%  kable(align = "c") %>% kable_styling()
+
+```
+
+
+### Seg. (1,3,5): Perfil Financeiro
+
+```{r}
+
+library(readxl)
+preenchimento <- read_excel("preenchimento.xlsx")
+
+
+preenchimento %>% mutate(Book = substr(`_VAR_`,1,2)) %>% filter(  (Book=="PF")  ) %>% 
+   mutate( `PF Cliente Novo` = round(PCT_CLI_NOVO,3) , `PF Não Tomador` = round(PCT_NAO_TOMADOR,3) ) %>%
+   select(c("_VAR_","PF Cliente Novo","PF Não Tomador")) %>%  
+   kable(align = "c") %>% kable_styling()
+
+```
+### Seg. (1,3,5): Pontualidade de Pagamento
+
+```{r}
+
+preenchimento %>% mutate(Book = substr(`_VAR_`,1,2)) %>% filter(  (Book=="PP")  ) %>% 
+   mutate( `PF Cliente Novo` = round(PCT_CLI_NOVO,3) , `PF Não Tomador` = round(PCT_NAO_TOMADOR,3) ) %>%
+   select(c("_VAR_","PF Cliente Novo","PF Não Tomador")) %>%  
+   kable(align = "c") %>% kable_styling()
+
+```
+
+
+### Seg. (1,3,5): Relacionamento Mercado
+
+```{r}
+
+preenchimento %>% mutate(Book = substr(`_VAR_`,1,2)) %>% filter(  (Book=="RM")  ) %>% 
+   mutate( `PF Cliente Novo` = round(PCT_CLI_NOVO,3) , `PF Não Tomador` = round(PCT_NAO_TOMADOR,3) ) %>%
+   select(c("_VAR_","PF Cliente Novo","PF Não Tomador")) %>%  
+   kable(align = "c") %>% kable_styling()
+
+```
+
+
+
+
+
+## <a id="A3" href="#ETP"  style="color:#003641">3. Códigos de Exceção.</a>{.tabset}
+
+
+### Códigos de Exceção
+
+Código    | Frequência para Todos os Indicadores   | Interpretação
+----------|----------------------------------------|----------------
+150       | 908                                    | Viés não-bancarisado
+200       | 250                                    | Viés não-bancarisado
+222       | 6.030                                  | Viés não-bancarisado
+299       | 86.992 ou 30.150 ou 65.151             | Viés não-bancarisado
+303       | 27.651                                 | Não há inf. base de dados
+301       | 203 ou 136 ou 47                       | Opt-out
+302       | 0                                      | Determinação judicial
+304       | Frequência variável por indicador      | Não há inf. suficientes para cálculo
+0 até 100 | Frequência variável por indicador      | Escore Válido
+
+
+
+### Preenchimento dos Segmentos
+- Distribuição do indicador _PF_CP_VOL02_
+
+Código/ESCORE | Seg. 0 | Seg. 1 | Seg. 2 | Seg. 3 | Seg. 4 | Seg. 5 | Seg. 6 | Seg. 299
+--------------|--------|--------|--------|--------|--------|--------|--------|----------
+Escore 0 ~ 25 |	15   |	562  |	66   |	879  |	108  |	5589 |	847  | 13.240
+Escore 25~ 50 |	16   |	277  |	22   |	534  |	31   |	3630 |	337  | 7.621
+Escore 50~ 75 |	118  |	398  |	26   |	778  |	32	  |	6935 |	442  | 12.677
+Escore 75~100 |	19   |	200  |	6    |	335  |	18   |	2953 |	201  | 5.637
+Cod.    303   |	8    |    	  |	313  |        |	358  |	     |	9709 | 17.263
+Cod.    304   |	18   |	578  |	346  |	388  |	210  |	3550 |	2890 | 14.260
+Cod.    150   |	473  |	     |        |        |		  |        |        | 435
+Cod.    301   |		  |	3    |	9    |	1    |	12   |	10   |	39   | 129
+Cod.    200   |	83   |        |        |	     |		  |        |        | 167
+Cod.    222   |	2818 |        |        |	     |	     |        |        | 3212
+
+
+
+
+## <a id="A4" href="#ETP"  style="color:#003641">4. KS dos Preenchidos.</a>{.tabset}
+
+
+### KS Cliente Novo
+
+\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n
+
+```{r}
+
+quod %>% filter( (KS_CLI_NOVO>0|KS_NAO_TOMA>0)) %>% group_by(BOOK) %>% 
+   summarise(`KS Médio`=mean(KS_CLI_NOVO, na.rm=TRUE)) %>% 
+   kable(align="c") %>%  kable_styling()
+
+
+```
+
+### KS Perfil Financeiro
+
+\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n
+
+```{r}
+
+#quod %>% group_by(BOOK) %>% summarise(`Preenchimento Médio`=mean(KS_NAO_TOMA, na.rm=TRUE)) %>%  
+#  kable(align = "c") %>%  kable_styling()
+
+quod %>% mutate(Book = substr(`Variável`,1,2)) %>% filter((Book=="PF")&(KS_CLI_NOVO>0|KS_NAO_TOMA>0)) %>% 
+   mutate( `KS Cliente Novo` = replace_na(round(KS_CLI_NOVO,3),'') , 
+           `KS Não Tomador`  = replace_na(round(KS_NAO_TOMA,3),'') ) %>%
+   select(c("Variável","KS Cliente Novo","KS Não Tomador")) %>%  
+   kable(align = "c") %>% kable_styling()
+
+```
+
+
+\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n
+
+### KS Pontualidade de Pagamento
+
+```{r}
+
+quod %>% mutate(Book = substr(`Variável`,1,2)) %>% filter((Book=="PP")&(KS_CLI_NOVO>0|KS_NAO_TOMA>0) ) %>% 
+   mutate( `KS Cliente Novo` = replace_na(round(KS_CLI_NOVO,3),'') , 
+           `KS Não Tomador`  = replace_na(round(KS_NAO_TOMA,3),'') ) %>%
+   select(c("Variável","KS Cliente Novo","KS Não Tomador")) %>%  
+   kable(align = "c") %>% kable_styling()
+
+
+#quod %>% group_by(BOOK) %>% summarise(`Preenchimento Médio`=mean(KS_NAO_TOMA, na.rm=TRUE)) %>%  
+#  kable(align = "c") %>%  kable_styling()
+#names(quod)
+
+```
+
+
+### KS Relacionameto de Mercado
+
+
+
+```{r, echo=FALSE}
+
+quod %>% mutate(Book = substr(`Variável`,1,2)) %>% filter((Book=="RM")&(KS_CLI_NOVO>0|KS_NAO_TOMA>0) ) %>% 
+   mutate( `KS Cliente Novo` = replace_na(round(KS_CLI_NOVO,3),'') , 
+           `KS Não Tomador`  = replace_na(round(KS_NAO_TOMA,3),'') ) %>%
+   select(c("Variável","KS Cliente Novo","KS Não Tomador")) %>%  
+   kable(align = "c") %>% kable_styling()
+
+```
+
+
+
+
+
+```{r eval=FALSE, include=FALSE}
+
+quod %>% mutate( classe = case_when( KS_NAO_TOMA < 0.10 ~ 1,
+                                     KS_NAO_TOMA <=0.20 ~ 2,
+                                     KS_NAO_TOMA <=0.30 ~ 3,
+                                     KS_NAO_TOMA  >0.30 ~ 4 ) )  %>% 
+  filter(PCT_SEM_SCORE <0.50) %>% mutate( `Classe de KS` = classe %>% as.factor %>% 
+                                            fct_recode(`KS 10%`="1",
+                                                       `KS entre 11% e 20%`="2",
+                                                       `KE entre 21% e 30%`="3",
+                                                       `KS maior que 31%`="4")) %>% 
+  group_by(`Classe de KS`) %>% summarise(Contagem=n()) %>%  kable(align="c") %>% kable_styling()
+
+#quod %>% mutate( classe = case_when( KS_CLI_NOVO < 0.10 ~ 1,
+#                                     KS_CLI_NOVO <=0.20 ~ 2,
+#                                     KS_CLI_NOVO <=0.30 ~ 3,
+#                                     KS_CLI_NOVO  >0.30 ~ 4 ) )  %>% 
+#  filter(PCT_SEM_SCORE <0.50) %>% mutate( `Classe de KS` = classe %>% as.factor %>% 
+#                                            fct_recode(`KS 10%`="1",
+#                                                       `KS entre 11% e 20%`="2",
+#                                                       `KE entre 21% e 30%`="3",
+#                                                       `KS maior que 31%`="4")) %>% 
+#  group_by(`Classe de KS`) %>% summarise(Contagem=n()) %>%  kable(align="c") %>% kable_styling()
+
+```
+
+\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n
+
+
+### Seleção de Indicadores 
+
+\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n
+
+
+- Indicadores com KS acima de 7,5% e com pelo menos 50% de score entre 0 e 100.
+
+
+```{r, echo=FALSE}
+
+#KS para indicadores com mais de 40% de preenchimento 
+quod %>% filter(PCT_SEM_SCORE <0.50 & (KS_CLI_NOVO>=0.075 |KS_NAO_TOMA >=0.075) ) %>% 
+  mutate( `KS Cliente Novo` = KS_CLI_NOVO , `KS Não Tomador` = KS_NAO_TOMA ) %>%
+  select(c("Variável","Interpretação","BOOK",`KS Cliente Novo`,`KS Não Tomador`)) %>%  
+     kable(align = "c") %>% kable_styling()
+
+```
+
+
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+
+
+## <a id="A5" href="#ETP"  style="color:#003641">5. Discriminação do INAD Sicoob 60.</a>{.tabset}
+
+
+
+
+### Perfil Financeiro
+
+- Discriminação de pelo menos 10% dos códigos.
+
+```{r}
+
+
+codexc <- read_excel("PlanilhaAnalise.xlsx", sheet="cods exc inad ks", skip=2)
+
+names(codexc)[3]  <- "INAD_299_D0" 
+names(codexc)[4]  <- "INAD_299_D1" 
+names(codexc)[5]  <- "TOT_299_D0" 
+names(codexc)[6]  <- "TOT_299_D1" 
+names(codexc)[7]  <- "KS_299" 
+names(codexc)[8]  <- "INAD_301_D0" 
+names(codexc)[9]  <- "INAD_301_D1" 
+names(codexc)[10] <- "TOT_301_D0" 
+names(codexc)[11] <- "TOT_301_D1" 
+names(codexc)[12] <- "KS_301" 
+names(codexc)[13] <- "INAD_304_D0" 
+names(codexc)[14] <- "INAD_304_D1" 
+names(codexc)[15] <- "TOT_304_D0" 
+names(codexc)[16] <- "TOT_304_D1" 
+names(codexc)[17] <- "KS_304" 
+
+
+codexc %>% mutate(Book = substr(GRP,1,2)) %>% 
+   filter( ( abs(INAD_299_D1-INAD_301_D1) >=0.10 | abs(INAD_299_D1-INAD_304_D0) >=0.10 |
+             abs(INAD_301_D1-INAD_304_D1) >=0.10 ) & (Book=="PF") &
+              (KS_299 >=0.075 | KS_301>=0.075 | KS_304>=0.075 ) ) %>% 
+   mutate( `Indicador` = GRP , `INAD 299 = 0` = replace_na(round(INAD_299_D0,3),'') , 
+                               `INAD 299 = 1` = replace_na(round(INAD_299_D1,3),'') , 
+                               `INAD 301 = 0` = replace_na(round(INAD_301_D0,3),'') , 
+                               `INAD 301 = 1` = replace_na(round(INAD_301_D1,3),'') , 
+                               `INAD 304 = 0` = replace_na(round(INAD_304_D0,3),'') ,
+                               `INAD 304 = 1` = replace_na(round(INAD_304_D1,3),'') ) %>%
+   select(c("Indicador","INAD 299 = 0","INAD 299 = 1","INAD 301 = 0","INAD 301 = 1","INAD 304 = 0","INAD 304 = 1")) %>%  
+   arrange(Indicador) %>%  kable(align = "c") %>% kable_styling()
+
+
+```
+
+
+
+
+### Pontualidade de Pagamento
+
+
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+
+```{r}
+
+
+codexc %>% mutate(Book = substr(GRP,1,2)) %>% 
+   filter( ( abs(INAD_299_D1-INAD_301_D1) >=0.10 | abs(INAD_299_D1-INAD_304_D0) >=0.10 |
+             abs(INAD_301_D1-INAD_304_D1) >=0.10 ) & (Book=="PP") &
+              (KS_299 >=0.075 | KS_301>=0.075 | KS_304>=0.075 ) ) %>% 
+   mutate( `Indicador` = GRP , `INAD 299 = 0` = replace_na(round(INAD_299_D0,3),'') , 
+                               `INAD 299 = 1` = replace_na(round(INAD_299_D1,3),'') , 
+                               `INAD 301 = 0` = replace_na(round(INAD_301_D0,3),'') , 
+                               `INAD 301 = 1` = replace_na(round(INAD_301_D1,3),'') , 
+                               `INAD 304 = 0` = replace_na(round(INAD_304_D0,3),'') ,
+                               `INAD 304 = 1` = replace_na(round(INAD_304_D1,3),'') ) %>%
+   select(c("Indicador","INAD 299 = 0","INAD 299 = 1","INAD 301 = 0","INAD 301 = 1","INAD 304 = 0","INAD 304 = 1")) %>%  
+   arrange(Indicador) %>%  kable(align = "c") %>% kable_styling()
+
+```
+
+
+
+### Relacionamento com Mercado
+
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+
+```{r, fig.align="center"}
+
+
+codexc %>% mutate(Book = substr(GRP,1,2)) %>% 
+   filter( ( abs(INAD_299_D1-INAD_301_D1) >=0.10 | abs(INAD_299_D1-INAD_304_D0) >=0.10 |
+             abs(INAD_301_D1-INAD_304_D1) >=0.10 ) & (Book=="RM") &
+              (KS_299 >=0.075 | KS_301>=0.075 | KS_304>=0.075 ) ) %>% 
+   mutate( `Indicador` = GRP , `INAD 299 = 0` = replace_na(round(INAD_299_D0,3),'') , 
+                               `INAD 299 = 1` = replace_na(round(INAD_299_D1,3),'') , 
+                               `INAD 301 = 0` = replace_na(round(INAD_301_D0,3),'') , 
+                               `INAD 301 = 1` = replace_na(round(INAD_301_D1,3),'') , 
+                               `INAD 304 = 0` = replace_na(round(INAD_304_D0,3),'') ,
+                               `INAD 304 = 1` = replace_na(round(INAD_304_D1,3),'') ) %>%
+   select(c("Indicador","INAD 299 = 0","INAD 299 = 1","INAD 301 = 0","INAD 301 = 1","INAD 304 = 0","INAD 304 = 1")) %>%  
+   arrange(Indicador) %>%  kable(align = "c") %>% kable_styling()
+```
+
+
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+
+
+## <a id="A6" href="#ETP"  style="color:#003641">6. Indicadores Selecionados Quod.</a>{.tabset}
+
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+
+
+### Perfil Financeiro
+
+Variável    | Descrição                                                          | Critério
+------------|--------------------------------------------------------------------|----------------
+PF_CP_VOL01 | Volume (\$) de pagamentos de produtos de créd. em relação a renda  | Preenchimento, KS 
+PF_CP_VOL02 | Volume (\$) de pagamentos realizados                               | Preenchimento, KS 
+PF_CP_VOL03 | Volume (\$) de pag. em cartão de crédito em relação a renda        | Preenchimento, KS 
+PF_CP_VOL04 | Volume (\$) de pagamentos em cartão de crédito                     | Preenchimento, KS 
+ $~~~~~~~$  |   $~~~~~~~~~~~~~$                                                  | $~~~~~~~~~~~~~$
+ $~~~~~~~$  |   $~~~~~~~~~~~~~$                                                  | $~~~~~~~~~~~~~$
+
+
+
+### Pontualidade de Pagamento
+
+Variável    | Descrição                                                    | Critério
+------------|--------------------------------------------------------------|-------------------
+PP_AV_AMP01 | Nível de endividamento vigente com credores distintos        | Discriminação INAD 
+PP_AV_AMP02 | Volume (\$) de pagamentos em cartão de crédito               | Preenchimento, KS 
+PP_AV_GRV01 | Pontuação que indica o nível de inadimplência                | Discriminação INAD 
+PP_AV_MRC01 | Comportamento recente de pagamento de dívidas em aberto      | Discriminação INAD
+PP_AV_MRC02 | Volume de pagamento recente de dívidas em aberto             | Discriminação INAD
+PP_HA_VLR01 | Pontuação que indica o volume (\$) em atraso                 | Discriminação INAD
+PP_HA_VLR02 | Comprometimento da renda com dívidas                         | Discriminação INAD
+
+Obs: Discriminação de pelo menos 10% no INAD pelos códigos de excessão.
+
+
+
+
+### Relacionamento com Mercado
+
+
+Variável    | Descrição                                                  | Critério
+------------|------------------------------------------------------------|----------------
+RM_BC_REC02 | Pontuação que indica o tempo desde a última contratação    | Discriminação INAD
+ $~~~~~~~$  |   $~~~~~~~~~~~~~$                                          | $~~~~~~~~~~~~~$
+ $~~~~~~~$  |   $~~~~~~~~~~~~~$                                          | $~~~~~~~~~~~~~$
+ $~~~~~~~$  |   $~~~~~~~~~~~~~$                                          | $~~~~~~~~~~~~~$
+
+
+
+
+### Matriz de Correlação
+
+
+
+ Correlação | PF_CP_CNT01 | PF_CP_VOL01 | PF_CP_VOL02 | PF_CP_VOL03 | PP_AV_AMP01 | PP_AV_GRV01 | PP_AV_MRC01 | PP_AV_MRC02 | PP_HA_VLR01
+------------|-------------|-------------|-------------|-------------|-------------|-------------|-------------|-------------|-------------
+PF_CP_CNT01	|    1,000    |   -0,153    | 	0,473 	|	-0,033     |  -0,173     |  -0,214     |  -0,061     |   -0,104    |  -0,147
+PF_CP_VOL01	|   -0,153    |    1,000    | 	0,206 	|   0,955     |	0,204     |   0,243     |   0,135     |    0,143    |   0,224
+PF_CP_VOL02	|    0,473    |    0,206    | 	1,000 	|   0,371     |	0,007     |  -0,026     |   0,110     |    0,079    |  -0,091
+PF_CP_VOL03	|   -0,033    |    0,955    | 	0,371 	|   1,000     |	0,264     |   0,234     |   0,189     |    0,179    |   0,247
+PP_AV_AMP01	|   -0,173    |    0,204    | 	0,007 	|   0,264     |	1,000     |   0,201     |   0,188     |    0,139    |   0,461
+PP_AV_GRV01	|   -0,214    |    0,243    |   -0,026 	|   0,234     |	0,201     |   1,000     |  -0,174     |   -0,054    |   0,500
+PP_AV_MRC01	|   -0,061    |    0,135    | 	0,110 	|   0,189     |	0,188     |  -0,174     |   1,000     |    0,771    |   0,112
+PP_AV_MRC02	|   -0,104    |    0,143    | 	0,079 	|   0,179     |	0,139     |  -0,054     |   0,771     |    1,000    |   0,184
+PP_HA_VLR01	|   -0,147    |    0,224    |   -0,091 	|   0,247     |	0,461     |   0,500     |   0,112     |    0,184    |   1,000 
+
+
+## 
+
+
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+
+
+## <a id="A7" href="#ETP"  style="color:#003641">7. Comparação SERASA, SCR, Quod.</a>{.tabset}
+
+
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+
+
+- Modelo Quod *Random Forest*: 
+
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+
+- PERF_SICB_60 = SPF_CP_CNT01 , SPF_CP_VOL01 , SPF_CP_VOL02 , SPF_CP_VOL03 , SPP_AV_AMP01 , 
+SPP_AV_GRV01 , SPP_AV_MRC01 , SPP_AV_MRC02 , SPP_HA_VLR01 , SRM_BC_REC02
+- Peso SCR:   $\small{1-\exp(-0.20*Qtd~ Consultas)}$
+- Peso Quod:  $\small{\exp(-0.20*Qtd~ Consultas)}$
+
+
+### Peso Quantidade de Consultas SCR
+
+Qtd consultas SCR |   Peso SCR     |  Peso Quod
+------------------|----------------|----------------
+   1              |   0.181269     |  0.818731      
+   2              |   0.329680     |  0.670320      
+   3              |   0.451188     |  0.548812      
+   4              |   0.550671     |  0.449329      
+   5              |   0.632121     |  0.367879      
+   6              |   0.698806     |  0.301194      
+   7              |   0.753403     |  0.246597      
+   8              |   0.798104     |  0.201896      
+   9              |   0.834701     |  0.165299      
+   10             |   0.864665     |  0.135335      
+   11             |   0.889197     |  0.110803      
+   12             |   0.909282     |  0.090717      
+   
+
+
+
+
+### KS
+
+
+SEGMENTO        | Bureau      |    KS    |
+----------------|-------------|----------|
+PF Não Tomador  |  QUOD       |  38,408% |
+PF Não Tomador  |  SERASA     |  56,276% |
+PF Não Tomador  |  SCR SICOOB |  46,924% |
+PF Não Tomador  |  SCR + QUOD |  50,624% |
+PF Cliente Novo |  QUOD       |  35,301% |
+PF Cliente Novo |  SERASA     |  51,600% | 
+PF Cliente Novo |  SCR SICOOB |  23,036% | 
+PF Cliente Novo |  SCR + QUOD |  40,679% | 
+
+### Evolução PF Não Tomador
+
+```{r, fig.align="center", out.width="60%"}
+
+library(readxl)
+evolucao_ks <- read_excel("evolucao_ks.xlsx", col_types = c("date", "text","text", "numeric"))
+
+PFNAO = evolucao_ks %>% filter( SEGM_SICB=="PF Não Tomador") 
+CLNEW = evolucao_ks %>% filter( SEGM_SICB=="PF Cliente Novo") 
+
+
+library(ggplot2)
+ggplot(PFNAO, aes(x=DT_MVM_DWM)) + geom_line(aes(y=KS,col=ESCORE) , size=1.3) + 
+  labs(title="Evolução KS",subtitle="PF Não Tomador") +
+   theme( legend.title = element_text(size = 14),
+          legend.text  = element_text(size = 14))
+
+
+### Variable Importance
+#SEGMENTO        | Bureau    |    KS     |
+#----------------|-----------|------------|
+#SPP_AV_MRC02    |    1733   |  0.014564  |
+#SPF_CP_VOL02    |    3718   |  0.006741  |
+#SEGM_SICB	    |    214    |  0.001520  |
+#SPF_CP_VOL01    |    728    |  0.000889  |
+#SPF_CP_VOL03    |    3176   |  0.002726  |
+#SPF_CP_CNT01    |    3266   |  0.002260  |
+#$~~~~~~~~~~~~~$ | $~~~~~~~$ |  $~~~~~~~$ |
+#$~~~~~~~~~~~~~$ | $~~~~~~~$ |  $~~~~~~~$ |
+#$~~~~~~~~~~~~~$ | $~~~~~~~$ |  $~~~~~~~$ |
+#$~~~~~~~~~~~~~$ | $~~~~~~~$ |  $~~~~~~~$ |
+#$~~~~~~~~~~~~~$ | $~~~~~~~$ |  $~~~~~~~$ |
+
+
+#Correlação  | PF_CP_CNT01| PF_CP_VOL01 | PF_CP_VOL02 | PF_CP_VOL03 | PF_CP_VOL04 | PP_AV_MRC02
+#------------|------------|-------------|-------------|-------------|-------------|------------- 
+#PF_CP_CNT01 |     100%   |    47,717%  |    65,539%  |   65,095%   |    53,005%  |  -37,852%  
+#PF_CP_VOL01 |            |    100%     |    68,193%  |   84,803%   |    60,392%  |  -30,496%
+#PF_CP_VOL02 |            |             |    100%     |   87,902%   |    96,507%  |  -29,811% 
+##PF_CP_VOL03 |            |             |             |   100%      |    79,794%  |  -33,988%
+#PF_CP_VOL04 |            |             |             |             |    100%     |  -17,132%
+#PP_AV_MRC02 |            |             |             |             |             |    100%
+
+```
+
+
+### Evolução PF Cliente Novo
+
+
+
+
+
+```{r, fig.align="center", out.width="60%"}
+
+ggplot(CLNEW, aes(x=DT_MVM_DWM)) + geom_line(aes(y=KS,col=ESCORE) , size=1.3) + 
+  labs(title="Evolução KS",subtitle="PF Cliente Novo") +
+   theme( legend.title = element_text(size = 14),
+          legend.text  = element_text(size = 14))
+  
+
+```
+
+
+## 
+
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+
+
+
+## <a id="A8" href="#ETP"  style="color:#003641">8. Seleção Final.</a>
+
+$~~~~~~~~~~~~~~~~~~~~$
+
+
+$~~~~~~~~~~~~~~~~~~~~$
+
+ 
+
+### Conclusão
+
+
+- Entre todos os indicadores analisados, consideramos aproveitáveis os indicadores: PF_CP_CNT01, PF_CP_VOL01, PF_CP_VOL02, PF_CP_VOL03, PP_AV_AMP01, PP_AV_AMP02, PP_AV_GRV01, SPP_AV_MRC01, SPP_AV_MRC02, SPP_HA_VLR01, SRM_BC_REC02.
+$~~~~~~~~~~~~~~~~~~~~$
+- Os resultados encontrados até o presente, sugere desconsiderar a Quod das possibilidades atuais na contratação de serviços de bureau.
+$~~~~~~~~~~~~~~~~~~~~$
+- Novas evidencias podem surgir a partir do escore personalizado Quod, com expectativa de finalização até a primeira semana de outubro.
+$~~~~~~~~~~~~~~~~~~~~$
+ - Existe também a expectativa também de aumento da cobertura dos indicadores Quod com o passar tempo, tornando essa possibilidade mais promissora no futuro.
+ $~~~~~~~~~~~~~~~~~~~~$
+- Entretanto, no momento atual, devida à baixa cobertura dos indicadores, concluímos pela não contratação dos serviços da Quod.
+
+
+
+
+
+ 
+\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n
+## 
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+$~~~~~~~~~~~~~~~~~~~~$
+
+
+
+```{r out.width = "20%",fig.align="left"}
+knitr::include_graphics('Sicoob.png')
+```
+
